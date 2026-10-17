@@ -1,1 +1,0 @@
-{"version":3,"file":"googleReview.d.ts","sourceRoot":"","sources":["../../../src/generated/types/googleReview.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,MAAM,WAAW,YAAY;IAC3B,UAAU,EAAE,MAAM,CAAC;IACnB,MAAM,EAAE,MAAM,CAAC;IACf,IAAI,EAAE,MAAM,CAAC;IACb,YAAY,EAAE,MAAM,CAAC;IACrB,gBAAgB;IAChB,WAAW,EAAE,MAAM,GAAG,IAAI,CAAC;CAC5B"}

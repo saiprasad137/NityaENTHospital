@@ -1,5 +1,5 @@
 import { RequestUploadUrlBody, RequestUploadUrlResponse } from "@workspace/api-zod";
-import { Router, type IRouter } from "express";
+import express, { Router, type IRouter } from "express";
 import { Readable } from "node:stream";
 import { ObjectPermission } from "../lib/objectAcl";
 import { ObjectNotFoundError, ObjectStorageService } from "../lib/objectStorage";
@@ -53,6 +53,26 @@ router.post(
     } catch (error) {
       req.log.error({ err: error }, "Error generating media upload URL");
       res.status(500).json({ error: "Could not prepare the media upload." });
+    }
+  },
+);
+
+router.put(
+  "/storage/uploads/direct/:id",
+  express.raw({ type: "*/*", limit: "100mb" }),
+  async (req, res): Promise<void> => {
+    try {
+      const id = req.params.id;
+      const contentType =
+        (req.headers["content-type"] as string) || "application/octet-stream";
+      const buffer = Buffer.isBuffer(req.body)
+        ? req.body
+        : Buffer.from(req.body || "");
+      await objectStorage.saveLocalUpload(id, buffer, contentType);
+      res.sendStatus(200);
+    } catch (error) {
+      req.log.error({ err: error }, "Error saving local upload");
+      res.status(500).json({ error: "Could not save uploaded media." });
     }
   },
 );

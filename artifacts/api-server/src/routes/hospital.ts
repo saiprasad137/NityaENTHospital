@@ -1,5 +1,6 @@
 import {
   CreateAchievementBody,
+  CreateAchievementResponse,
   CreateAppointmentBody,
   CreateAppointmentResponse,
   CreateDoctorBody,
@@ -149,19 +150,8 @@ router.get("/public/reviews", async (req, res): Promise<void> => {
       return;
     }
 
-    const payload = (await googleResponse.json()) as {
-      places?: Array<{
-        displayName?: { text?: string };
-        rating?: number;
-        userRatingCount?: number;
-        reviews?: Array<{
-          rating?: number;
-          text?: { text?: string };
-          authorAttribution?: { displayName?: string };
-          relativePublishTimeDescription?: string;
-          publishTime?: string;
-        }>;
-      }>;
+    type GooglePlaceDetails = {
+      displayName?: { text?: string };
       rating?: number;
       userRatingCount?: number;
       reviews?: Array<{
@@ -172,7 +162,10 @@ router.get("/public/reviews", async (req, res): Promise<void> => {
         publishTime?: string;
       }>;
     };
-    const place = payload.places?.[0] ?? payload;
+    const payload = (await googleResponse.json()) as GooglePlaceDetails & {
+      places?: Array<GooglePlaceDetails>;
+    };
+    const place: GooglePlaceDetails = payload.places?.[0] ?? payload;
     if (
       !placeId &&
       !/nitya.*ent|ent.*nitya/i.test(place.displayName?.text ?? "")

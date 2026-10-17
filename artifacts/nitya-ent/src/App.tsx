@@ -13,7 +13,15 @@ import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const clerkPubKey = publishableKeyFromHost(window.location.hostname, import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+const rawClerkKey = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ?? '').trim();
+const hasValidClerkKey = Boolean(
+  rawClerkKey &&
+  !rawClerkKey.includes('...') &&
+  (rawClerkKey.startsWith('pk_test_') || rawClerkKey.startsWith('pk_live_')),
+);
+const clerkPubKey = hasValidClerkKey
+  ? publishableKeyFromHost(window.location.hostname, rawClerkKey)
+  : undefined;
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 
 function stripBase(path: string) {

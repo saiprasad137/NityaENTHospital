@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Production build outputs & generated dist files
+dist/
+**/dist/
+build/
+**/build/
+.output/
+
+# TypeScript build info & incremental cache
+*.tsbuildinfo
+.tsbuildinfo
+tsconfig.tsbuildinfo
+**/*.tsbuildinfo
+**/.tsbuildinfo
+
+# Vite, Turbo & bundler caches
+.cache/
+.vite/
+.turbo/
+coverage/
+
+# Replit artifacts and config
+.replit-artifact/
+**/.replit-artifact/
+.replit
+replit.nix
+replit.md
+
+# Environment variables (keep examples)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local uploads & temporary files
+uploads/
+.uploads/
+tmp/
+temp/
+
+# IDE & Editor files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.agy/

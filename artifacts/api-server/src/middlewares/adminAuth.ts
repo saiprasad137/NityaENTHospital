@@ -8,15 +8,26 @@ export interface AdminIdentity {
 
 const getConfiguredAdminEmails = (): Set<string> =>
   new Set(
-    (process.env.NITYA_ADMIN_EMAILS ?? "")
+    (process.env.NITYA_ADMIN_EMAILS ?? process.env.ADMIN_EMAILS ?? "")
       .split(",")
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean),
   );
 
+const isClerkKeyValid = (key?: string) =>
+  Boolean(key && !key.includes("...") && (key.startsWith("sk_") || key.startsWith("pk_")));
+
+export const isClerkConfigured = (): boolean =>
+  isClerkKeyValid(process.env.CLERK_SECRET_KEY) &&
+  isClerkKeyValid(process.env.CLERK_PUBLISHABLE_KEY);
+
 export async function resolveAdminIdentity(
   req: Request,
 ): Promise<{ identity: AdminIdentity | null; signedIn: boolean }> {
+  if (!isClerkConfigured()) {
+    return { identity: null, signedIn: false };
+  }
+
   const { userId } = getAuth(req);
   if (!userId) return { identity: null, signedIn: false };
 
@@ -42,6 +53,13 @@ export const requireAdmin: RequestHandler = async (
   next,
 ): Promise<void> => {
   try {
+    if (!isClerkConfigured()) {
+      res.status(503).json({
+        error: "Authentication is not configured. Please set valid CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in .env.",
+      });
+      return;
+    }
+
     const { identity, signedIn } = await resolveAdminIdentity(req);
     if (!signedIn) {
       res.status(401).json({ error: "Sign in to continue." });
